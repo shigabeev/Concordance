@@ -3,37 +3,41 @@ import sys
 import os
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:      # takes only one input file for now
-        folder = sys.argv[1]
-    else:
-        folder = "Data"
     # Settings
     left = 2
     right = 2
     start_line = 30
-    end_line = 100
+    end_line = 200       # None for unlimited
     export = "DB.json"
+    folder = "Data"
+    # defaults override
+    if len(sys.argv) > 1:
+        folder = sys.argv[1]
+    if len(sys.argv) > 2:
+        left = sys.argv[2]
+    if len(sys.argv) > 3:
+        right = sys.argv[3]
     # /settings
     dic = {}
     files = os.listdir(folder)
     for filename in files:
-        lines = []
-        with open("%(folder)s/%(file)s" % {'folder': folder, 'file': filename}, 'r') as f:
-            for line in f:
-                temp = line.lower()                         # Tokenizing
+        if filename[0] == '.':
+            continue
+        with open("%(folder)s/%(file)s" % {'folder': folder, 'file': filename}, 'r', encoding="utf-8") as f:
+            for line in f.readlines()[start_line:end_line]:
+                words = line.lower()                         # Tokenizing
                 for stop in [',', '-', '.', '?', '–']:      # symbols to avoid
-                    temp = temp.replace(stop, '')
-                lines.append(temp.split())
-        for line in lines[start_line:end_line]:
-            for i, word in enumerate(line):
-                if word not in dic:
-                    dic[word] = []
-                for l in range(1, left+1):
-                    if i > l:
-                        dic[word].append(line[i - l])
-                for r in range(1, right+1):
-                    if i < len(line) - r:
-                        dic[word].append(line[i + r])
+                    words = words.replace(stop, '')
+                words = words.split()
+                for i, word in enumerate(words):
+                    if word not in dic:
+                        dic[word] = []
+                    for l in range(1, left+1):
+                        if i > l:
+                            dic[word].append(words[i - l])
+                    for r in range(1, right+1):
+                        if i < len(words) - r:
+                            dic[word].append(words[i + r])
     with open(export, 'w') as f:
         json.dump(dic, f, ensure_ascii=False)
 
@@ -43,5 +47,5 @@ if __name__ == "__main__":
 # Левый и правый контекст — сколько слов влево, сколько слов вправо - Done
 # Учитывать ли границу предложения
 # Принудительное ограничение количества слов.
-#
+# Улучшить работу с памятю. Использовать кольцевой буфер
 #
