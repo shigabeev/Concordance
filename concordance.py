@@ -1,39 +1,46 @@
 import json
 import sys
 import os
+import re
 
 if __name__ == "__main__":
     # Settings
     left = 2
     right = 2
     start_line = 30
-    end_line = 200       # None for unlimited
+    end_line = 100         # None for unlimited
+    read = None           # JSON file to read, argv[4]
     export = "DB.json"
     folder = "Data"
     # defaults override
     if len(sys.argv) > 1:
         folder = sys.argv[1]
     if len(sys.argv) > 2:
-        left = sys.argv[2]
+        left = int(sys.argv[2])
     if len(sys.argv) > 3:
-        right = sys.argv[3]
+        right = int(sys.argv[3])
+    if len(sys.argv) > 4:
+        read = sys.argv[4]
     # /settings
     dic = {}
+    if read:
+        with open(read, 'r') as fp:
+            try:
+                dic = json.load(fp)
+            except:
+                dic = {}
     files = os.listdir(folder)
     for filename in files:
         if filename[0] == '.':
             continue
         with open("%(folder)s/%(file)s" % {'folder': folder, 'file': filename}, 'r', encoding="utf-8") as f:
             for line in f.readlines()[start_line:end_line]:
-                words = line.lower()                         # Tokenizing
-                for stop in [',', '-', '.', '?', '–']:      # symbols to avoid
-                    words = words.replace(stop, '')
-                words = words.split()
+                words = re.findall(r'\w+', line.lower())        # Tokenizing
                 for i, word in enumerate(words):
                     if word not in dic:
                         dic[word] = []
                     for l in range(1, left+1):
-                        if i > l:
+                        if i > l-1:
                             dic[word].append(words[i - l])
                     for r in range(1, right+1):
                         if i < len(words) - r:

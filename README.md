@@ -2,9 +2,19 @@
 <p>Python project for finding context for each word in text</p>
 
 ## Usage:
-<p>Takes one argument — folder with data(Data by default).</p?
-<p>Settings are selected right in code.</p>
-<p>Defaults are:</p>
+<p>
+    <br> this script takes 4 optional arguments, to run it from terminal you'll need python 3
+    <pre>$ python3 concordance.py Data 2 2 DB.json</pre>
+    <br> Takes 4 arguments:
+    <ol>
+        <li> Folder with data(Data by default).</li>
+        <li> Left context</li>
+        <li> Right context</li>
+        <li> JSON to grab data from</li>
+    </ol>
+    <br> Settings are selected right in code.
+    <br> Defaults settings are:
+</p>
 <ul>
     <li>left = 2    - left context</li>
     <li>right = 2   - right context</li>
